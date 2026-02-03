@@ -4,12 +4,25 @@ import { useEffect, useState } from 'react';
 import { supabase, type Project, type Task } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ProjectForm } from '@/components/project-form';
+import { TaskForm } from '@/components/task-form';
+import { Plus, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Dialog states
+  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | undefined>();
+  const [editingTask, setEditingTask] = useState<Task | undefined>();
 
   useEffect(() => {
     fetchData();
@@ -19,15 +32,67 @@ export default function Home() {
     try {
       const [projectsRes, tasksRes] = await Promise.all([
         supabase.from('projects').select('*').order('updated_at', { ascending: false }),
-        supabase.from('tasks').select('*').order('created_at', { ascending: false }).limit(20)
+        supabase.from('tasks').select('*').order('created_at', { ascending: false })
       ]);
 
       if (projectsRes.data) setProjects(projectsRes.data);
       if (tasksRes.data) setTasks(tasksRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
+      toast.error('Failed to load data');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function deleteProject(id: string) {
+    if (!confirm('Are you sure you want to delete this project? All associated tasks will also be deleted.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('projects').delete().eq('id', id);
+      if (error) throw error;
+      
+      toast.success('Project deleted successfully');
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      toast.error('Failed to delete project');
+    }
+  }
+
+  async function deleteTask(id: string) {
+    if (!confirm('Are you sure you want to delete this task?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('tasks').delete().eq('id', id);
+      if (error) throw error;
+      
+      toast.success('Task deleted successfully');
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      toast.error('Failed to delete task');
+    }
+  }
+
+  async function updateTaskStatus(taskId: string, newStatus: Task['status']) {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status: newStatus })
+        .eq('id', taskId);
+
+      if (error) throw error;
+      
+      toast.success('Task status updated');
+      fetchData();
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast.error('Failed to update task status');
     }
   }
 
@@ -132,11 +197,19 @@ export default function Home() {
               </Card>
             </div>
 
-            {/* Recent Projects */}
+            {/* Active Projects */}
             <Card className="backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 border-slate-200/50 dark:border-slate-800/50">
               <CardHeader>
-                <CardTitle>Active Projects</CardTitle>
-                <CardDescription>Currently active projects</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Active Projects</CardTitle>
+                    <CardDescription>Currently active projects</CardDescription>
+                  </div>
+                  <Button onClick={() => { setEditingProject(undefined); setProjectDialogOpen(true); }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Project
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -184,6 +257,23 @@ export default function Home() {
                             )}
                           </div>
                         </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => { setEditingProject(project); setProjectDialogOpen(true); }}>
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => deleteProject(project.id)} className="text-red-600">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   ))}
@@ -197,8 +287,16 @@ export default function Home() {
             {/* Recent Tasks */}
             <Card className="backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 border-slate-200/50 dark:border-slate-800/50">
               <CardHeader>
-                <CardTitle>Recent Tasks</CardTitle>
-                <CardDescription>Latest tasks across all projects</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Recent Tasks</CardTitle>
+                    <CardDescription>Latest tasks across all projects</CardDescription>
+                  </div>
+                  <Button onClick={() => { setEditingTask(undefined); setTaskDialogOpen(true); }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Task
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -219,12 +317,42 @@ export default function Home() {
                           )}
                         </div>
                         <div className="flex items-center gap-2 ml-4">
-                          <Badge className={getStatusColor(task.status)} variant="outline">
-                            {task.status.replace('_', ' ')}
-                          </Badge>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="px-2 py-1 text-xs rounded-md hover:bg-white/60 dark:hover:bg-slate-700/60">
+                                <Badge className={getStatusColor(task.status)} variant="outline">
+                                  {task.status.replace('_', ' ')}
+                                </Badge>
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'todo')}>To Do</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'in_progress')}>In Progress</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'blocked')}>Blocked</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'completed')}>Completed</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'cancelled')}>Cancelled</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                           <Badge className={getPriorityColor(task.priority)} variant="outline">
                             {task.priority}
                           </Badge>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-6 w-6">
+                                <MoreVertical className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => { setEditingTask(task); setTaskDialogOpen(true); }}>
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => deleteTask(task.id)} className="text-red-600">
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                     </div>
@@ -240,8 +368,16 @@ export default function Home() {
           <TabsContent value="projects">
             <Card className="backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 border-slate-200/50 dark:border-slate-800/50">
               <CardHeader>
-                <CardTitle>All Projects</CardTitle>
-                <CardDescription>Complete list of all projects</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>All Projects</CardTitle>
+                    <CardDescription>Complete list of all projects</CardDescription>
+                  </div>
+                  <Button onClick={() => { setEditingProject(undefined); setProjectDialogOpen(true); }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Project
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -250,21 +386,42 @@ export default function Home() {
                       key={project.id}
                       className="p-4 rounded-lg backdrop-blur-xl bg-white/40 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-700/50"
                     >
-                      <h3 className="font-semibold text-slate-900 dark:text-white">
-                        {project.name}
-                      </h3>
-                      {project.description && (
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                          {project.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2 mt-3">
-                        <Badge className={getStatusColor(project.status)}>
-                          {project.status}
-                        </Badge>
-                        <Badge className={getPriorityColor(project.priority)}>
-                          {project.priority}
-                        </Badge>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-slate-900 dark:text-white">
+                            {project.name}
+                          </h3>
+                          {project.description && (
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                              {project.description}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-2 mt-3">
+                            <Badge className={getStatusColor(project.status)}>
+                              {project.status}
+                            </Badge>
+                            <Badge className={getPriorityColor(project.priority)}>
+                              {project.priority}
+                            </Badge>
+                          </div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => { setEditingProject(project); setProjectDialogOpen(true); }}>
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => deleteProject(project.id)} className="text-red-600">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   ))}
@@ -279,8 +436,16 @@ export default function Home() {
           <TabsContent value="tasks">
             <Card className="backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 border-slate-200/50 dark:border-slate-800/50">
               <CardHeader>
-                <CardTitle>All Tasks</CardTitle>
-                <CardDescription>Complete list of all tasks</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>All Tasks</CardTitle>
+                    <CardDescription>Complete list of all tasks</CardDescription>
+                  </div>
+                  <Button onClick={() => { setEditingTask(undefined); setTaskDialogOpen(true); }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Task
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -306,12 +471,44 @@ export default function Home() {
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-2 ml-4">
-                          <Badge className={getStatusColor(task.status)}>
-                            {task.status.replace('_', ' ')}
-                          </Badge>
-                          <Badge className={getPriorityColor(task.priority)}>
-                            {task.priority}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button className="px-2 py-1 text-xs rounded-md hover:bg-white/60 dark:hover:bg-slate-700/60">
+                                  <Badge className={getStatusColor(task.status)}>
+                                    {task.status.replace('_', ' ')}
+                                  </Badge>
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'todo')}>To Do</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'in_progress')}>In Progress</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'blocked')}>Blocked</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'completed')}>Completed</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateTaskStatus(task.id, 'cancelled')}>Cancelled</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Badge className={getPriorityColor(task.priority)}>
+                              {task.priority}
+                            </Badge>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-6 w-6">
+                                <MoreVertical className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => { setEditingTask(task); setTaskDialogOpen(true); }}>
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => deleteTask(task.id)} className="text-red-600">
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                     </div>
@@ -325,6 +522,54 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Project Dialog */}
+      <Dialog open={projectDialogOpen} onOpenChange={setProjectDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{editingProject ? 'Edit Project' : 'Create New Project'}</DialogTitle>
+            <DialogDescription>
+              {editingProject ? 'Update project details' : 'Add a new project to track'}
+            </DialogDescription>
+          </DialogHeader>
+          <ProjectForm
+            project={editingProject}
+            onSuccess={() => {
+              setProjectDialogOpen(false);
+              setEditingProject(undefined);
+              fetchData();
+            }}
+            onCancel={() => {
+              setProjectDialogOpen(false);
+              setEditingProject(undefined);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Task Dialog */}
+      <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{editingTask ? 'Edit Task' : 'Create New Task'}</DialogTitle>
+            <DialogDescription>
+              {editingTask ? 'Update task details' : 'Add a new task'}
+            </DialogDescription>
+          </DialogHeader>
+          <TaskForm
+            task={editingTask}
+            onSuccess={() => {
+              setTaskDialogOpen(false);
+              setEditingTask(undefined);
+              fetchData();
+            }}
+            onCancel={() => {
+              setTaskDialogOpen(false);
+              setEditingTask(undefined);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
