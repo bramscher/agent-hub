@@ -54,7 +54,7 @@ INSERT INTO projects (id, name, description, status, priority, github_url, verce
 INSERT INTO tasks (id, project_id, title, description, status, priority, assigned_to, due_date) VALUES
 -- Agent Hub tasks
 (
-  'task-001',
+  '10000000-0000-0000-0000-000000000001',
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   'Set up Supabase database',
   'Run schema SQL, configure environment variables, test database connection',
@@ -64,7 +64,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   NULL
 ),
 (
-  'task-002',
+  '10000000-0000-0000-0000-000000000002',
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   'Deploy to Vercel',
   'Connect GitHub repo to Vercel, configure environment variables, deploy production',
@@ -74,7 +74,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   '2026-02-04T00:00:00Z'
 ),
 (
-  'task-003',
+  '10000000-0000-0000-0000-000000000003',
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   'Add REST API endpoints',
   'Create API routes for programmatic task/project creation from AI agents',
@@ -84,7 +84,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   NULL
 ),
 (
-  'task-004',
+  '10000000-0000-0000-0000-000000000004',
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   'Implement MCP server integration',
   'Add Model Context Protocol server similar to Archon for AI assistant integration',
@@ -96,7 +96,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
 
 -- Konmashi Platform tasks
 (
-  'task-011',
+  '20000000-0000-0000-0000-000000000001',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   'Design Max (Maintenance AI) persona',
   'Define voice, personality, knowledge base, and conversation flows for maintenance agent',
@@ -106,7 +106,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   NULL
 ),
 (
-  'task-012',
+  '20000000-0000-0000-0000-000000000002',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   'Design Sally (Receptionist AI) persona',
   'Define voice, personality, knowledge base, and conversation flows for receptionist agent',
@@ -116,7 +116,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   NULL
 ),
 (
-  'task-013',
+  '20000000-0000-0000-0000-000000000003',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   'Design Leesa (Leasing AI) persona',
   'Define voice, personality, knowledge base, and conversation flows for leasing agent',
@@ -126,7 +126,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   '2026-02-05T00:00:00Z'
 ),
 (
-  'task-014',
+  '20000000-0000-0000-0000-000000000004',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   'Build Appolio data integration',
   'Connect to Appfolio API, sync property data, tenant info, maintenance requests',
@@ -136,7 +136,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   '2026-02-10T00:00:00Z'
 ),
 (
-  'task-015',
+  '20000000-0000-0000-0000-000000000005',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   'Create avatar video pipeline',
   'AI agents → avatar videos → multi-platform distribution (YouTube, TikTok, Instagram, LinkedIn)',
@@ -146,7 +146,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   '2026-02-15T00:00:00Z'
 ),
 (
-  'task-016',
+  '20000000-0000-0000-0000-000000000006',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   'HDPM proof-of-concept metrics',
   'Track lead conversion, ROI, engagement metrics to validate business model',
@@ -156,7 +156,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   '2026-02-20T00:00:00Z'
 ),
 (
-  'task-017',
+  '20000000-0000-0000-0000-000000000007',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   'Konmashi commercialization roadmap',
   'Plan white-label offering, pricing tiers, go-to-market strategy for Appfolio/Haven AI customers',
@@ -168,7 +168,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
 
 -- HDPM tasks
 (
-  'task-021',
+  '30000000-0000-0000-0000-000000000001',
   'c3d4e5f6-a7b8-9012-cdef-123456789012',
   'Implement AI agent team (Max, Sally, Leesa)',
   'Deploy Konmashi agents as brand differentiators for HDPM property management',
@@ -178,7 +178,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   '2026-02-15T00:00:00Z'
 ),
 (
-  'task-022',
+  '30000000-0000-0000-0000-000000000002',
   'c3d4e5f6-a7b8-9012-cdef-123456789012',
   'Optimize HDPM operations',
   'Streamline processes, improve margins, integrate AI automation',
@@ -190,7 +190,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
 
 -- Wellifi tasks
 (
-  'task-031',
+  '40000000-0000-0000-0000-000000000001',
   'd4e5f6a7-b8c9-0123-def1-234567890123',
   'Feature roadmap planning',
   'Plan next quarter feature releases and prioritization',
@@ -202,7 +202,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
 
 -- BramPlan tasks
 (
-  'task-041',
+  '50000000-0000-0000-0000-000000000001',
   'e5f6a7b8-c9d0-1234-ef12-345678901234',
   'Identify acquisition targets',
   'Research potential companies for roll-up strategy in property management and related verticals',
@@ -212,7 +212,7 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
   NULL
 ),
 (
-  'task-042',
+  '50000000-0000-0000-0000-000000000002',
   'e5f6a7b8-c9d0-1234-ef12-345678901234',
   'Build management team playbook',
   'Document processes for scaling acquired companies and building effective teams',
@@ -225,9 +225,9 @@ INSERT INTO tasks (id, project_id, title, description, status, priority, assigne
 -- Insert Documentation
 INSERT INTO documentation (id, project_id, task_id, title, content, doc_type) VALUES
 (
-  'doc-001',
+  '60000000-0000-0000-0000-000000000001',
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-  'task-001',
+  '10000000-0000-0000-0000-000000000001',
   'Supabase Setup Complete',
   '# Database Configuration
 
@@ -246,7 +246,7 @@ Supabase project created and configured successfully.
   'completion'
 ),
 (
-  'doc-002',
+  '60000000-0000-0000-0000-000000000002',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
   NULL,
   'Konmashi Omnichannel Strategy',
@@ -279,7 +279,7 @@ Property management companies stuck using vanilla Appfolio tools with no differe
   'technical'
 ),
 (
-  'doc-003',
+  '60000000-0000-0000-0000-000000000003',
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
   NULL,
   'Agent Hub Tech Stack Decision',
@@ -310,9 +310,9 @@ Simpler than Archon, focused specifically on task/project tracking rather than f
   'decision'
 ),
 (
-  'doc-004',
+  '60000000-0000-0000-0000-000000000004',
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
-  'task-011',
+  '20000000-0000-0000-0000-000000000001',
   'Max - Maintenance AI Persona',
   '# Max - Maintenance Coordinator AI
 
@@ -349,7 +349,7 @@ INSERT INTO activity_log (project_id, task_id, action, details, created_by) VALU
 ),
 (
   'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-  'task-001',
+  '10000000-0000-0000-0000-000000000001',
   'Task Completed',
   '{"task": "Set up Supabase database", "status": "completed"}',
   'brammolt'
@@ -363,14 +363,14 @@ INSERT INTO activity_log (project_id, task_id, action, details, created_by) VALU
 ),
 (
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
-  'task-011',
+  '20000000-0000-0000-0000-000000000001',
   'Task Completed',
   '{"task": "Design Max (Maintenance AI) persona", "status": "completed"}',
   'brammolt'
 ),
 (
   'b2c3d4e5-f6a7-8901-bcde-f12345678901',
-  'task-012',
+  '20000000-0000-0000-0000-000000000002',
   'Task Completed',
   '{"task": "Design Sally (Receptionist AI) persona", "status": "completed"}',
   'brammolt'
