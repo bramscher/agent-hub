@@ -6,12 +6,22 @@ A Next.js + Supabase powered dashboard for tracking tasks, projects, and documen
 
 ## Features
 
-- 📊 **Project Management** - Track all AI agent projects with status, priority, and links
-- ✅ **Task Tracking** - Manage tasks across projects with assignments and due dates
-- 📝 **Documentation** - Keep notes, decisions, and technical docs organized
-- 📈 **Activity Log** - Complete audit trail of all changes
-- 🎨 **Beautiful UI** - Apple-inspired glassmorphism design with dark mode
-- ⚡ **Real-time** - Powered by Supabase for instant updates
+### ✨ Full CRUD Operations
+- ➕ **Create** - Add new projects and tasks with intuitive forms
+- ✏️ **Edit** - Update any project or task with a click
+- 🗑️ **Delete** - Remove projects/tasks with confirmation
+- 🔄 **Quick Updates** - Change task status from dropdown (no edit needed!)
+
+### 📊 Core Features
+- **Project Management** - Track all AI agent projects with status, priority, and links
+- **Task Tracking** - Manage tasks across projects with assignments and due dates
+- **Documentation** - Keep notes, decisions, and technical docs organized
+- **Activity Log** - Complete audit trail of all changes
+- **Beautiful UI** - Apple-inspired glassmorphism design with dark mode
+- **Real-time** - Powered by Supabase for instant updates
+- **Toast Notifications** - Clear feedback for every action
+
+### 🎯 See [FEATURES.md](./FEATURES.md) for complete feature list
 
 ## Tech Stack
 
